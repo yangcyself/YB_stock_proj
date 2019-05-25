@@ -21,10 +21,11 @@ from tensorflow.python.layers import convolutional as convolutional_layers
 from tensorflow.python.ops import init_ops
 from tensorflow.python.ops import nn_ops
 from tensorflow.python.ops import nn_impl
+from tensorflow.python.keras.layers.convolutional import Conv
 
 import tensorflow as tf
 
-class _WNConv(convolutional_layers._Conv):
+class _WNConv(Conv):
     def __init__(self, *args, **kwargs):
         self.weight_norm = kwargs.pop('weight_norm')
         super(_WNConv, self).__init__(*args, **kwargs)
@@ -164,8 +165,9 @@ def wnconv1d(inputs,
         bias_constraint=bias_constraint,
         trainable=trainable,
         name=name,
-        dtype=inputs.dtype.base_dtype,
-        _reuse=reuse,
-        _scope=name) 
+        dtype=inputs.dtype.base_dtype)
+        # ,
+        # _reuse=reuse,
+        # _scope=name) 
     
     return layer.apply(inputs)
