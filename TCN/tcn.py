@@ -4,7 +4,7 @@ Author: Weiping Song
 Time: April 24, 2018
 '''
 import tensorflow as tf
-from wnconv1d import wnconv1d
+from TCN.wnconv1d import wnconv1d
 
 class TemporalConvNet(object):
     def __init__(self, num_channels, stride=1, kernel_size=2, dropout=0.2):
