@@ -3,7 +3,7 @@
 This is a model that input a time state(a series of features) and out put an action selection
 first planning to train it with simple policy gradient, 
 """
-from tcn import TemporalConvNet
+from TCN.tcn import TemporalConvNet
 import tensorflow as tf
 import tensorflow.nn as tfnn
 import numpy as np
