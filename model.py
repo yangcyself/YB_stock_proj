@@ -65,15 +65,19 @@ class Actor(object):
                 v = value_map[:,-1,tf.newaxis,:] # get the values of the last time step
                 vi_w = tf.get_variable('vi_w', [3,1,3], initializer=init_w, trainable=trainable)
                 for i in range(-2,-5,-1):
-                    q = tfnn.conv1d(v,vi_w,data_format="NWC")
-                    v = tf.reduce_max(q, axis=3, keep_dims=True, name="v%d"%i)
+                    q = tf.pad(v,tf.constant([[0,0],[0,0],[1,1]]))
+                    q = tfnn.conv1d(q,vi_w,1,"VALID",data_format="NCW")
+                        #v: [?,1,1,12] vi_w:[1,3,1,3]
+                    v = tf.reduce_max(q, axis=1, keepdims=True, name="v%d"%i)
                     v = v + value_map[:,i,tf.newaxis,:]
-            
+                # print(v.shape)
             with tf.variable_scope('a'):
-                paddings = tf.constant([[0, 0], [3, 3],[0,0]])
+                v = v[:,0,:] # reshape v into rank2
+                paddings = tf.constant([[0, 0],[3,3]])
                 v = tf.pad(v,paddings,"SYMMETRIC")
-                att_v = v[:,h-3:h+3,0]# the attentioned value function
-
+                h_pos = tf.one_hot(h,depth=10)
+                # att_v = v[:,0,h:h+7]# the attentioned value function
+                att_v = tf.concat([v, h_pos], 1) # concat the onehot position 
                 action = tf.layers.dense(att_v, self.a_dim, activation=tf.nn.tanh, kernel_initializer=init_w,
                                           bias_initializer=init_b, name='a', trainable=trainable)
                 a = tf.argmax(action)
@@ -98,12 +102,12 @@ state_dim = (20,100) # num_steps, num_features
 # all placeholder for tf
 with tf.name_scope('S'):
     S = tf.placeholder(tf.float32, shape=[None, *state_dim], name='s')
-    H = tf.placeholder(tf.float32, shape=[None, *state_dim], name='h')
+    H = tf.placeholder(tf.int32, shape=[None,], name='h')
 with tf.name_scope('R'):
     R = tf.placeholder(tf.float32, [None, 1], name='r')
 with tf.name_scope('S_'):
     S_ = tf.placeholder(tf.float32, shape=[None, *state_dim], name='s_')
-    H_ = tf.placeholder(tf.float32, shape=[None, *state_dim], name='h_')
+    H_ = tf.placeholder(tf.int32, shape=[None,], name='h_')
 
 
 sess = tf.Session()
