@@ -22,7 +22,7 @@ for episode in range(EPISODES):
     epoTotalReward = 0
     for i in range(MAXSTEPS):
         if(obs.shape[0]<WAIT):
-            (s_,h_),_,d,_ = e.step(1) 
+            (s_,h_),r,d,_ = e.step(1) 
         else:
             a = actor.choose_action(obs[-WAIT:],h)
             a = int(a)

@@ -29,7 +29,7 @@ class StockEnv(gym.Env):
         self.current = None
         self.index = 0
         
-        self.action_hand = [-1,0,1] # mapping the change of hand and the action self.action_prise = [] def step(self, action): assert(self.current is not None) self.index += 1 stock_obs = self.current[self.index] done = self.index == len(self.current-1) 
+        self.action_hand = [-1,0,1] # mapping the change of hand and the action 
         self.action_prize = [119,108,118] # the index of bidprice1, midprice, Askprice
         
         self.deltaTimeThresh = pd.Timedelta('600s')
@@ -90,6 +90,7 @@ class fannyEnv():
         self.price = 100
         self.obs = 0
         self.stepcount = 0
+        self.action_hand = [-1,0,1] # mapping the change of hand and the action 
     def generage_obs(self):
         return np.array([self.obs]*Feature_num)
 
@@ -104,7 +105,7 @@ class fannyEnv():
         done = self.stepcount == 100
         self.price += self.obs
         self.obs += 3*(random.random()-0.5)
-        stock_obs = self.generage_obs(self.obs)
+        stock_obs = self.generage_obs()
         hand_obs = np.array(self.hands)
 
         if(done):
@@ -116,4 +117,4 @@ class fannyEnv():
         self.price = 100
         self.obs = 0
         self.stepcount = 0
-        return self.generage_obs(self.obs),self.hands
+        return self.generage_obs(),self.hands

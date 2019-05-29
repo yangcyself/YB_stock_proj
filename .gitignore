@@ -7,3 +7,4 @@ env/mazeenv/__pycache__/*
 env/mazeenv/*
 env/dist/*
 env/*.egg-info
+__pycache__/*
