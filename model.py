@@ -114,6 +114,7 @@ class Actor(object):
 
     def choose_action(self, s,h):
         s = s[np.newaxis, :]    # single state
+        h = h[np.newaxis, :]
         return self.sess.run(self.a, feed_dict={S: s,H:h})
 
 state_dim = (20,Feature_num) # num_steps, num_features
@@ -138,7 +139,12 @@ if __name__ == '__main__':
     s,h = e.reset()
     s = np.concatenate([s.reshape((1,-1))]*20)
     
-    h = h.reshape(1,*(h.shape))
     print(s.shape,h.shape)
-    # print(actor.choose_action(s,h)) #input s: 1*20*137 h 1*1
-    actor.learn(s,h,np.array([[100]]))
+    print(actor.choose_action(s,h)) #input s: 20*137 h 1 When choose action, we don't have to add batch axis of s
+    s = s.reshape(1,*(s.shape))
+    h = h.reshape(1,*(h.shape))
+    actor.learn(s,h,np.array([[-10000]]))
+
+    s = s.reshape(*(s.shape[1:]))
+    h = h.reshape(*(h.shape[1:]))
+    print(actor.choose_action(s,h)) #input s: 20*137 h 1 When choose action, we don't have to add batch axis of s
