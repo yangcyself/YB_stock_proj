@@ -134,6 +134,8 @@ if __name__ == '__main__':
     from env.stockenv import StockEnv
     e = StockEnv()
     s,h = e.reset()
-    print(s.shape,h)
     s = np.concatenate([s.reshape((1,-1))]*20)
+    
+    h = h.reshape(1,*(h.shape))
+    print(s.shape,h.shape)
     print(actor.choose_action(s,h))

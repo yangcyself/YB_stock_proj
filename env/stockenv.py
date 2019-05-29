@@ -46,7 +46,7 @@ class StockEnv(gym.Env):
         rwd = (old_hand-self.hands) * self.action_prize[action]
         done = (self.current.iloc[self.index+1]["UpdateTime"] - 
                 self.current.iloc[self.index ]["UpdateTime"] >  self.deltaTimeThresh )
-        hand_obs = self.hands
+        hand_obs = np.array(self.hands)
 
         if(done):
             self.current = None
@@ -71,7 +71,7 @@ class StockEnv(gym.Env):
         # print(tmp_obs.columns.values)
         stock_obs = tmp_obs.values[0]
         # print(stock_obs.shape)
-        return stock_obs,self.hands
+        return stock_obs, np.array(self.hands)
     def render(self, mode='human'):
         pass           
 
