@@ -91,13 +91,15 @@ class Actor(object):
                 if(modelDebug):
                     print("action",action.shape)
                 a = tf.argmax(action)
+                if(modelDebug):
+                    print("a",a.shape)
                 a_hot = tf.one_hot(a,depth = 3)
                 prob = tf.reduce_sum(tf.multiply(action, a_hot),reduction_indices=[1])
                 eligibility = tf.log(prob) * R
                 loss = -tf.reduce_sum(eligibility)
                 self.optimizer = tf.train.AdamOptimizer(0.01).minimize(loss)
 
-        return a
+        return action
 
 
     def learn(self, s,h,r):   # batch update
