@@ -90,14 +90,14 @@ class Actor(object):
                 action = tf.nn.softmax(action) #action (?, 3)
                 if(modelDebug):
                     print("action",action.shape)
-                a = tf.argmax(action)
+                a = tf.argmax(action,axis = 1)
                 a_hot = tf.one_hot(a,depth = 3)
                 prob = tf.reduce_sum(tf.multiply(action, a_hot),reduction_indices=[1])
                 eligibility = tf.log(prob) * R
                 loss = -tf.reduce_sum(eligibility)
                 self.optimizer = tf.train.AdamOptimizer(0.01).minimize(loss)
 
-        return a
+        return action
 
 
     def learn(self, s,h,r):   # batch update
@@ -138,4 +138,4 @@ if __name__ == '__main__':
     
     h = h.reshape(1,*(h.shape))
     print(s.shape,h.shape)
-    print(actor.choose_action(s,h)) #input s: 1*20*137 h 1*1
+    # print(actor.choose_action(s,h)) #input s: 1*20*137 h 1*1
