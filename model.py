@@ -63,7 +63,7 @@ class Actor(object):
                 tcndropout = tf.placeholder_with_default(0., shape=())
                 value_map = build_tcn(s,tcndropout,kernel_size=3,num_channels=[256,64,32,10])
                 if(modelDebug):
-                    print("value_map shape",value_map.shape)
+                    print("value_map shape",value_map.shape) #value_map shape (?, 20, 10)
             with tf.variable_scope('vin'):
                 v = value_map[:,-1,tf.newaxis,:] # get the values of the last time step
                 vi_w = tf.get_variable('vi_w', [3,1,3], initializer=init_w, trainable=trainable)
@@ -72,7 +72,7 @@ class Actor(object):
                     q = tfnn.conv1d(q,vi_w,1,"VALID",data_format="NCW")
                         #v: [?,1,1,12] vi_w:[1,3,1,3]
                     if(modelDebug):
-                        print("q shape",q.shape)
+                        print("q shape",q.shape) # q shape (?, 3, 10)
                     v = tf.reduce_max(q, axis=1, keepdims=True, name="v%d"%i)
                     v = v + value_map[:,i,tf.newaxis,:]
                 # print(v.shape)
@@ -84,19 +84,24 @@ class Actor(object):
                 # att_v = v[:,0,h:h+7]# the attentioned value function
                 att_v = tf.concat([v, h_pos], 1) # concat the onehot position 
                 if(modelDebug):
-                    print("att_v",att_v.shape)
+                    print("att_v",att_v.shape) #att_v (?, 26)
                 action = tf.layers.dense(att_v, self.a_dim,  kernel_initializer=init_w,
                                           bias_initializer=init_b, name='a', trainable=trainable)
-                action = tf.nn.softmax(action)
+                action = tf.nn.softmax(action) #action (?, 3)
                 if(modelDebug):
                     print("action",action.shape)
                 a = tf.argmax(action)
+                a_hot = tf.one_hot(a,depth = 3)
+                prob = tf.reduce_sum(tf.mulmultiply(action, a_hot),reduction_indices=[1])
+                eligibility = tf.log(prob) * R
+                loss = -tf.reduce_sum(eligibility)
+                self.optimizer = tf.train.AdamOptimizer(0.01).minimize(loss)
 
         return a
 
 
-    def learn(self, s,h):   # batch update
-        self.sess.run(self.train_op, feed_dict={S: s,H:h})
+    def learn(self, s,h,r):   # batch update
+        self.sess.run(self.optimizer, feed_dict={S: s,H:h,R:r})
 
         if self.replacement['name'] == 'soft':
             self.sess.run(self.soft_replace)
@@ -109,7 +114,7 @@ class Actor(object):
         s = s[np.newaxis, :]    # single state
         return self.sess.run(self.a, feed_dict={S: s,H:h})
 
-state_dim = (20,Feature_num) # num_steps, num_features
+state_dim = (10,Feature_num) # num_steps, num_features
 # all placeholder for tf
 with tf.name_scope('S'):
     S = tf.placeholder(tf.float32, shape=[None, *state_dim], name='s')
@@ -126,3 +131,9 @@ if __name__ == '__main__':
     sess = tf.Session()
     actor = Actor(sess, 3, 0.001, dict(name='soft', tau=0.01))
     sess.run(tf.global_variables_initializer())
+    from env.stockenv import StockEnv
+    e = StockEnv
+    s,h = e.reset()
+    print(s.shape,h)
+    s = np.concatenate([s]*10)
+    print(actor.choose_action(s,h))
