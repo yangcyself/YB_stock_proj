@@ -66,7 +66,7 @@ class StockEnv(gym.Env):
                 self.current.iloc[self.index - 1]["UpdateTime"] <  self.deltaTimeThresh ):
             self.index = self.index - 1
         
-        print("loaded: "self.current,"start from: ",self.index)
+        print("loaded: ",self.current,"start from: ",self.index)
         self.hands = 5
         tmp_obs = self.current.iloc[self.index:self.index+1]
         tmp_obs = tmp_obs.drop(columns = ["UpdateMillisec","UpdateTime"])
