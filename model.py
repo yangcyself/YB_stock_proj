@@ -33,10 +33,10 @@ class Actor(object):
 
         with tf.variable_scope('Actor'):
             # input s, output a
-            self.a = self._build_net(S,H, scope='eval_net', trainable=True)
+            self.a,self.optimizer = self._build_net(S,H, scope='eval_net', trainable=True)
 
             # input s_, output a, get a_ for critic
-            self.a_ = self._build_net(S_,H_, scope='target_net', trainable=False)
+            self.a_,_ = self._build_net(S_,H_, scope='target_net', trainable=False)
         self.e_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='Actor/eval_net')
         self.t_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='Actor/target_net')
 
@@ -97,9 +97,9 @@ class Actor(object):
                 prob = tf.reduce_sum(tf.multiply(action, a_hot),reduction_indices=[1])
                 eligibility = tf.log(prob) * R
                 loss = -tf.reduce_sum(eligibility)
-                self.optimizer = tf.train.AdamOptimizer(0.01).minimize(loss)
+                optimizer = tf.train.AdamOptimizer(0.01).minimize(loss)
 
-        return a
+        return a,optimizer
 
 
     def learn(self, s,h,r):   # batch update
