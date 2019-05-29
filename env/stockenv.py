@@ -81,3 +81,38 @@ class StockEnv(gym.Env):
     # self.lines = 
     def close(self):
         pass
+
+class fannyEnv():
+    # this env tests whether the agent can learn something
+    # when the state is positive, the price will go up next time
+    def __init__(self):
+        self.hands = 5
+        self.price = 100
+        self.obs = 0
+        self.stepcount = 0
+    def generage_obs(self):
+        return np.array([self.obs]*Feature_num)
+
+    def step(self,action):
+        old_hand = self.hands
+        self.hands += self.action_hand[action]
+        self.hands = min(10,self.hands)
+        self.hands = max(0,self.hands)
+        rwd = (old_hand-self.hands) * self.price
+        self.stepcount +=1
+        
+        done = self.stepcount == 100
+        self.price += self.obs
+        self.obs += 3*(random.random()-0.5)
+        stock_obs = self.generage_obs(self.obs)
+        hand_obs = np.array(self.hands)
+
+        if(done):
+            self.current = None
+        return (stock_obs,hand_obs), rwd, done, None
+
+    def reset(self):
+        self.hands = 5
+        self.price = 100
+        self.obs = 0
+        self.stepcount = 0
