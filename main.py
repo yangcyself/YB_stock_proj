@@ -18,6 +18,7 @@ for episode in range(EPISODES):
     s = s.reshape(1,-1)
     obs = s
     ep_s, ep_h, ep_s_, ep_h_, ep_r = [],[],[],[],[]
+    epoTotalReward = 0
     for i in range(MAXSTEPS):
         if(obs.shape[0]<WAIT):
             (s_,h_),_,d,_ = e.step(1) 
@@ -36,9 +37,10 @@ for episode in range(EPISODES):
 
         s = s_
         h = h_
-    
+        epoTotalReward += r 
         if(d):
             break
+    print(epoTotalReward)
     ep_s = np.array(ep_s)
     ep_s_ = np.array(ep_s_)
     ep_h = np.array(ep_h)
