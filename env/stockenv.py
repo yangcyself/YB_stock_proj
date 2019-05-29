@@ -10,7 +10,7 @@ import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
 
-Feature_num = 139
+Feature_num = 137
 filePath = os.path.join(os.path.dirname(os.path.realpath(__file__)),"envdata")
 allNumbers = set([i for i in range(100)])
 testNumbers = set([i for i in range(0,100,7)])
@@ -40,7 +40,9 @@ class StockEnv(gym.Env):
         self.hands = min(10,self.hands)
         self.hands = max(0,self.hands)
         self.index += 1
-        stock_obs = self.current.iloc[self.index].values
+        tmp_obs = self.current.iloc[self.index]
+        tmp_obs.drop(columns = ["UpdateMillisec","UpdateTime"])
+        stock_obs = tmp_obs.values
         rwd = (old_hand-self.hands) * self.action_prize[action]
         done = (self.current.iloc[self.index+1]["UpdateTime"] - 
                 self.current.iloc[self.index ]["UpdateTime"] >  self.deltaTimeThresh )
@@ -64,7 +66,10 @@ class StockEnv(gym.Env):
                 self.current.iloc[self.index - 1]["UpdateTime"] <  self.deltaTimeThresh ):
             self.index = self.index - 1
         self.hands = 5
-        return self.current.iloc[self.index].values,self.hands
+        tmp_obs = self.current.iloc[self.index]
+        tmp_obs.drop(columns = ["UpdateMillisec","UpdateTime"])
+        stock_obs = tmp_obs.values
+        return stock_obs,self.hands
     def render(self, mode='human'):
         pass           
 

@@ -8,7 +8,7 @@ import tensorflow as tf
 import tensorflow.nn as tfnn
 import numpy as np
 
-Feature_num = 139
+Feature_num = 137
 modelDebug = False
 def build_tcn(inputs,tcn_dropout,kernel_size,num_channels):
     # inputs = placeholder
@@ -92,7 +92,7 @@ class Actor(object):
                     print("action",action.shape)
                 a = tf.argmax(action)
                 a_hot = tf.one_hot(a,depth = 3)
-                prob = tf.reduce_sum(tf.mulmultiply(action, a_hot),reduction_indices=[1])
+                prob = tf.reduce_sum(tf.multiply(action, a_hot),reduction_indices=[1])
                 eligibility = tf.log(prob) * R
                 loss = -tf.reduce_sum(eligibility)
                 self.optimizer = tf.train.AdamOptimizer(0.01).minimize(loss)
@@ -114,7 +114,7 @@ class Actor(object):
         s = s[np.newaxis, :]    # single state
         return self.sess.run(self.a, feed_dict={S: s,H:h})
 
-state_dim = (10,Feature_num) # num_steps, num_features
+state_dim = (20,Feature_num) # num_steps, num_features
 # all placeholder for tf
 with tf.name_scope('S'):
     S = tf.placeholder(tf.float32, shape=[None, *state_dim], name='s')
@@ -132,7 +132,7 @@ if __name__ == '__main__':
     actor = Actor(sess, 3, 0.001, dict(name='soft', tau=0.01))
     sess.run(tf.global_variables_initializer())
     from env.stockenv import StockEnv
-    e = StockEnv
+    e = StockEnv()
     s,h = e.reset()
     print(s.shape,h)
     s = np.concatenate([s]*10)
