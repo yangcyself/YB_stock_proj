@@ -7,6 +7,7 @@ from TCN.tcn import TemporalConvNet
 import tensorflow as tf
 import tensorflow.nn as tfnn
 import numpy as np
+from tensorflow import losses
 
 Feature_num = 137
 modelDebug = False
@@ -23,7 +24,7 @@ def build_tcn(inputs,tcn_dropout,kernel_size,num_channels):
 
 
 
-class Actor(object):
+class Actor_Critic(object):
     def __init__(self, sess, action_dim, learning_rate, replacement):
         self.sess = sess
         self.a_dim = action_dim
@@ -33,10 +34,10 @@ class Actor(object):
 
         with tf.variable_scope('Actor'):
             # input s, output a
-            self.a,self.optimizer = self._build_net(S,H, scope='eval_net', trainable=True)
+            self.a,self.optimizer,self.value = self._build_net(S,H, scope='eval_net', trainable=True)
 
             # input s_, output a, get a_ for critic
-            self.a_,_ = self._build_net(S_,H_, scope='target_net', trainable=False)
+            self.a_,_ , self.value_ = self._build_net(S_,H_, scope='target_net', trainable=False)
         self.e_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='Actor/eval_net')
         self.t_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='Actor/target_net')
 
@@ -47,7 +48,7 @@ class Actor(object):
             self.soft_replace = [tf.assign(t, (1 - self.replacement['tau']) * t + self.replacement['tau'] * e)
                                  for t, e in zip(self.t_params, self.e_params)]
 
-    def _build_net(self, s,h, scope, trainable):
+    def _build_net(self, s,h, scope, trainable,ent_coef = 0.01, vf_coef = 0.5):
         # s is the state of the current market
         # h is the number of hand 0-11
         with tf.variable_scope(scope):
@@ -90,20 +91,37 @@ class Actor(object):
                 action = tf.nn.softmax(action) #action (?, 3)
                 if(modelDebug):
                     print("action",action.shape)
+
+                value = tf.layers.dense(att_v,1,
+                        kernel_initializer = init_w,bias_initializer = init_b,name = "v",trainable = trainable)
+
                 a = tf.argmax(action,axis = 1)
                 if(modelDebug):
                     print("a:",a.shape)
                 a_hot = tf.one_hot(a,depth = 3)
                 prob = tf.reduce_sum(tf.multiply(action, a_hot),reduction_indices=[1])
-                eligibility = tf.log(prob) * R
+                eligibility = tf.log(prob) * (R - value ) 
                 loss = -tf.reduce_sum(eligibility)
+
+                entropy = tf.reduce_mean( tf.multiply( tf.log(action), action  )) # the entropy term promotes exploration
+                if(modelDebug):
+                    print(" tf.multiply( tf.log(action), action  )", tf.multiply( tf.log(action), action  ).shape)
+                    print("entropy",entropy.shape)
+                loss += entropy * ent_coef
+
+                vf_loss = losses.mean_squared_error(value, R)
+                loss -= vf_loss * vf_coef
+
                 optimizer = tf.train.AdamOptimizer(0.01).minimize(loss)
 
-        return a,optimizer
+        return a,optimizer,value
 
 
-    def learn(self, s,h,r):   # batch update
-        self.sess.run(self.optimizer, feed_dict={S: s,H:h,R:r})
+    def learn(self, transitions,gamma = 0.95):   # batch update
+        s,h,s_,h_,r = transitions
+        v = self.sess.run(self.value_, feed_dict = {S_:s_, H_:h_})
+        v = r + gamma * v
+        self.sess.run(self.optimizer, feed_dict={S: s,H:h,R:v})
 
         if self.replacement['name'] == 'soft':
             self.sess.run(self.soft_replace)
@@ -116,6 +134,8 @@ class Actor(object):
         s = s[np.newaxis, :]    # single state
         h = h.reshape(1,*(h.shape))
         return self.sess.run(self.a, feed_dict={S: s,H:h})
+
+
 
 state_dim = (20,Feature_num) # num_steps, num_features
 # all placeholder for tf
