@@ -121,9 +121,13 @@ class Actor_Critic(object):
 
     def learn(self, transitions,gamma = 0.95):   # batch update
         s,h,s_,h_,r = transitions
+        # print("rshape",r.shape)
         v = self.sess.run(self.value_, feed_dict = {S_:s_, H_:h_})
-        v = r + gamma * v
-        print(s.shape, h.shape, v.shape)
+        # print("vshape",v.shape)
+        #v = r + gamma * v
+       	r = r.reshape(-1,1)
+        v = r + gamma*v
+        # print(s.shape, h.shape, v.shape)
         self.sess.run(self.optimizer, feed_dict={S: s,H:h,R:v})
 
         if self.replacement['name'] == 'soft':

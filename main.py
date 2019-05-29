@@ -44,6 +44,6 @@ for episode in range(EPISODES):
     ep_h = np.array(ep_h)
     ep_h_ = np.array(ep_h_)
     ep_r = np.array(ep_r)
-    print(ep_s.shape,ep_s_.shape,ep_r.shape)
+    # print(ep_s.shape,ep_s_.shape,ep_r.shape)
     transitions = (ep_s,ep_h,ep_s_,ep_h_, ep_r)
     actor.learn(transitions)
