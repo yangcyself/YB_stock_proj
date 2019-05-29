@@ -105,6 +105,9 @@ class fannyEnv():
         done = self.stepcount == 100
         self.price += self.obs
         self.obs += 3*(random.random()-0.5)
+
+        if(random.random()<0.2):
+            self.obs = random.randint(-3,3)
         stock_obs = self.generage_obs()
         hand_obs = np.array(self.hands)
 
