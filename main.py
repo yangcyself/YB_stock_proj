@@ -1,14 +1,15 @@
 # -^- coding: utf-8 -^-
 
 from model import Actor_Critic
-from env.stockenv import StockEnv
+from env.stockenv import StockEnv,fannyEnv
 import tensorflow as tf
 import numpy  as np
 
 sess = tf.Session()
 actor = Actor_Critic(sess, 3, 0.001, dict(name='soft', tau=0.01))
 sess.run(tf.global_variables_initializer())
-e = StockEnv()
+#e = StockEnv()
+e = fannyEnv()
 EPISODES = 100
 MAXSTEPS = 200
 WAIT = 20

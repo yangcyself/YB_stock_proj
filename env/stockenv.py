@@ -116,3 +116,4 @@ class fannyEnv():
         self.price = 100
         self.obs = 0
         self.stepcount = 0
+        return self.generage_obs(self.obs),self.hands
