@@ -121,6 +121,7 @@ class Actor_Critic(object):
         s,h,s_,h_,r = transitions
         v = self.sess.run(self.value_, feed_dict = {S_:s_, H_:h_})
         v = r + gamma * v
+        print(s.shape, h.shape, v.shape)
         self.sess.run(self.optimizer, feed_dict={S: s,H:h,R:v})
 
         if self.replacement['name'] == 'soft':

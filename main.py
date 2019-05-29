@@ -23,6 +23,7 @@ for episode in range(EPISODES):
             (s_,h_),_,d,_ = e.step(1) 
         else:
             a = actor.choose_action(obs[-WAIT:],h)
+            a = int(a)
             (s_,h_),r,d,_ =e.step(a)
         
         obs = np.concatenate([obs,s_.reshape(1,-1)])
