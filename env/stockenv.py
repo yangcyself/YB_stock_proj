@@ -40,9 +40,9 @@ class StockEnv(gym.Env):
         self.hands = min(10,self.hands)
         self.hands = max(0,self.hands)
         self.index += 1
-        tmp_obs = self.current.iloc[self.index]
-        tmp_obs.drop(columns = ["UpdateMillisec","UpdateTime"])
-        stock_obs = tmp_obs.values
+        tmp_obs = self.current.iloc[self.index:self.index+1]
+        tmp_obs = tmp_obs.drop(columns = ["UpdateMillisec","UpdateTime"])
+        stock_obs = tmp_obs.values[0]
         rwd = (old_hand-self.hands) * self.action_prize[action]
         done = (self.current.iloc[self.index+1]["UpdateTime"] - 
                 self.current.iloc[self.index ]["UpdateTime"] >  self.deltaTimeThresh )
@@ -66,9 +66,11 @@ class StockEnv(gym.Env):
                 self.current.iloc[self.index - 1]["UpdateTime"] <  self.deltaTimeThresh ):
             self.index = self.index - 1
         self.hands = 5
-        tmp_obs = self.current.iloc[self.index]
-        tmp_obs.drop(columns = ["UpdateMillisec","UpdateTime"])
-        stock_obs = tmp_obs.values
+        tmp_obs = self.current.iloc[self.index:self.index+1]
+        tmp_obs = tmp_obs.drop(columns = ["UpdateMillisec","UpdateTime"])
+        # print(tmp_obs.columns.values)
+        stock_obs = tmp_obs.values[0]
+        # print(stock_obs.shape)
         return stock_obs,self.hands
     def render(self, mode='human'):
         pass           

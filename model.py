@@ -135,5 +135,5 @@ if __name__ == '__main__':
     e = StockEnv()
     s,h = e.reset()
     print(s.shape,h)
-    s = np.concatenate([s]*10)
+    s = np.concatenate([s.reshape((1,-1))]*20)
     print(actor.choose_action(s,h))
