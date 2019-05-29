@@ -1,1 +1,6 @@
 TCN/__pycache__/*
+env/envdata/*.pkl
+env/__pycache__/*
+
+env/*.pyc
+env/mazeenv/__pycache__/*
