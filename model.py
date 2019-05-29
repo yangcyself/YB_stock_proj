@@ -94,6 +94,8 @@ class Actor_Critic(object):
 
                 value = tf.layers.dense(att_v,1,
                         kernel_initializer = init_w,bias_initializer = init_b,name = "v",trainable = trainable)
+                if(modelDebug):
+                    print("value :",value.shape)
 
                 a = tf.argmax(action,axis = 1)
                 if(modelDebug):
@@ -153,7 +155,7 @@ with tf.name_scope('S_'):
 if __name__ == '__main__':
     modelDebug  = True
     sess = tf.Session()
-    actor = Actor(sess, 3, 0.001, dict(name='soft', tau=0.01))
+    actor = Actor_Critic(sess, 3, 0.001, dict(name='soft', tau=0.01))
     sess.run(tf.global_variables_initializer())
     from env.stockenv import StockEnv
     e = StockEnv()
