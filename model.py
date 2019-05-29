@@ -8,7 +8,8 @@ import tensorflow as tf
 import tensorflow.nn as tfnn
 import numpy as np
 
-
+Feature_num = 139
+modelDebug = False
 def build_tcn(inputs,tcn_dropout,kernel_size,num_channels):
     # inputs = placeholder
     # self.dropout = tf.placeholder_with_default(0., shape=())
@@ -60,7 +61,9 @@ class Actor(object):
 
             with tf.variable_scope('tcn'):
                 tcndropout = tf.placeholder_with_default(0., shape=())
-                value_map = build_tcn(s,tcndropout,kernel_size=3,num_channels=[128,64,32,10])
+                value_map = build_tcn(s,tcndropout,kernel_size=3,num_channels=[256,64,32,10])
+                if(modelDebug):
+                    print("value_map shape",value_map.shape)
             with tf.variable_scope('vin'):
                 v = value_map[:,-1,tf.newaxis,:] # get the values of the last time step
                 vi_w = tf.get_variable('vi_w', [3,1,3], initializer=init_w, trainable=trainable)
@@ -68,6 +71,8 @@ class Actor(object):
                     q = tf.pad(v,tf.constant([[0,0],[0,0],[1,1]]))
                     q = tfnn.conv1d(q,vi_w,1,"VALID",data_format="NCW")
                         #v: [?,1,1,12] vi_w:[1,3,1,3]
+                    if(modelDebug):
+                        print("q shape",q.shape)
                     v = tf.reduce_max(q, axis=1, keepdims=True, name="v%d"%i)
                     v = v + value_map[:,i,tf.newaxis,:]
                 # print(v.shape)
@@ -78,9 +83,15 @@ class Actor(object):
                 h_pos = tf.one_hot(h,depth=10)
                 # att_v = v[:,0,h:h+7]# the attentioned value function
                 att_v = tf.concat([v, h_pos], 1) # concat the onehot position 
-                action = tf.layers.dense(att_v, self.a_dim, activation=tf.nn.tanh, kernel_initializer=init_w,
+                if(modelDebug):
+                    print("att_v",att_v.shape)
+                action = tf.layers.dense(att_v, self.a_dim,  kernel_initializer=init_w,
                                           bias_initializer=init_b, name='a', trainable=trainable)
+                action = tf.nn.softmax(action)
+                if(modelDebug):
+                    print("action",action.shape)
                 a = tf.argmax(action)
+
         return a
 
 
@@ -98,7 +109,7 @@ class Actor(object):
         s = s[np.newaxis, :]    # single state
         return self.sess.run(self.a, feed_dict={S: s,H:h})
 
-state_dim = (20,100) # num_steps, num_features
+state_dim = (20,Feature_num) # num_steps, num_features
 # all placeholder for tf
 with tf.name_scope('S'):
     S = tf.placeholder(tf.float32, shape=[None, *state_dim], name='s')
@@ -110,6 +121,8 @@ with tf.name_scope('S_'):
     H_ = tf.placeholder(tf.int32, shape=[None,], name='h_')
 
 
-sess = tf.Session()
-actor = Actor(sess, 3, 0.001, dict(name='soft', tau=0.01))
-sess.run(tf.global_variables_initializer())
+if __name__ == '__main__':
+    modelDebug  = True
+    sess = tf.Session()
+    actor = Actor(sess, 3, 0.001, dict(name='soft', tau=0.01))
+    sess.run(tf.global_variables_initializer())
