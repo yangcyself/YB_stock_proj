@@ -114,7 +114,7 @@ class Actor(object):
 
     def choose_action(self, s,h):
         s = s[np.newaxis, :]    # single state
-        h = h[np.newaxis, :]
+        h = h.reshape(1,*(h.shape))
         return self.sess.run(self.a, feed_dict={S: s,H:h})
 
 state_dim = (20,Feature_num) # num_steps, num_features
