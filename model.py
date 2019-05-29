@@ -141,3 +141,4 @@ if __name__ == '__main__':
     h = h.reshape(1,*(h.shape))
     print(s.shape,h.shape)
     # print(actor.choose_action(s,h)) #input s: 1*20*137 h 1*1
+    actor.learn(s,h,np.array([[100]]))
