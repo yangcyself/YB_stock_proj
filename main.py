@@ -8,8 +8,8 @@ import numpy  as np
 sess = tf.Session()
 actor = Actor_Critic(sess, 3, 0.001, dict(name='soft', tau=0.01))
 sess.run(tf.global_variables_initializer())
-#e = StockEnv()
-e = fannyEnv()
+e = StockEnv()
+#e = fannyEnv()
 EPISODES = 100
 MAXSTEPS = 200
 WAIT = 20
@@ -41,6 +41,7 @@ for episode in range(EPISODES):
         epoTotalReward += r 
         if(d):
             break
+    # print(ep_r)
     print(epoTotalReward)
     ep_s = np.array(ep_s)
     ep_s_ = np.array(ep_s_)

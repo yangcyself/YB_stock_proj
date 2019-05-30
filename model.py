@@ -164,14 +164,16 @@ if __name__ == '__main__':
     from env.stockenv import StockEnv
     e = StockEnv()
     s,h = e.reset()
+
     s = np.concatenate([s.reshape((1,-1))]*20)
     
     print(s.shape,h.shape)
     print(actor.choose_action(s,h)) #input s: 20*137 h 1 When choose action, we don't have to add batch axis of s
     s = s.reshape(1,*(s.shape))
     h = h.reshape(1,*(h.shape))
-    actor.learn(s,h,np.array([[-10000]]))
+    s,h,r,_ = e.step(1)
+    # actor.learn(s,h,np.array([[-10000]]))
 
-    s = s.reshape(*(s.shape[1:]))
-    h = h.reshape(*(h.shape[1:]))
-    print(actor.choose_action(s,h)) #input s: 20*137 h 1 When choose action, we don't have to add batch axis of s
+    # s = s.reshape(*(s.shape[1:]))
+    # h = h.reshape(*(h.shape[1:]))
+    # print(actor.choose_action(s,h)) #input s: 20*137 h 1 When choose action, we don't have to add batch axis of s

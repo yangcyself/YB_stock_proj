@@ -16,6 +16,7 @@ allNumbers = set([i for i in range(100)])
 testNumbers = set([i for i in range(0,100,7)])
 trainNumbers = allNumbers - testNumbers
 inputDataNames = [os.path.join(filePath,"%denv.pkl"%i) for i in trainNumbers]
+ChangFile_num = 50
 
 class StockEnv(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -33,6 +34,8 @@ class StockEnv(gym.Env):
         self.action_prize = [119,108,118] # the index of bidprice1, midprice, Askprice
         
         self.deltaTimeThresh = pd.Timedelta('600s')
+        
+        self.change_file_count = 0
     
     def step(self,action):
         old_hand = self.hands
@@ -42,31 +45,35 @@ class StockEnv(gym.Env):
         self.index += 1
         tmp_obs = self.current.iloc[self.index:self.index+1]
         tmp_obs = tmp_obs.drop(columns = ["UpdateMillisec","UpdateTime"])
+        # print(tmp_obs.columns[119],tmp_obs.columns[108],tmp_obs.columns[118])
         stock_obs = tmp_obs.values[0]
-        rwd = (old_hand-self.hands) * self.action_prize[action]
+        rwd = (old_hand-self.hands) * stock_obs[self.action_prize[action]]
         done = (self.current.iloc[self.index+1]["UpdateTime"] - 
                 self.current.iloc[self.index ]["UpdateTime"] >  self.deltaTimeThresh )
         hand_obs = np.array(self.hands)
 
-        if(done):
-            self.current = None
+
         return (stock_obs,hand_obs), rwd, done, None
 
     def reset(self):
-        
-        selectedFile = random.choice(self.inputDataNames)
-        pd.read_pickle(selectedFile)
+        if(self.current is None or self.change_file_count > ChangFile_num): 
+            selectedFile = random.choice(self.inputDataNames)
+            pd.read_pickle(selectedFile)
+            self.current = pd.read_pickle(selectedFile)
+            self.change_file_count = 0
+            print("loaded: ", selectedFile)
 
-        self.current = pd.read_pickle(selectedFile)
-
+        self.change_file_count += 1
         self.index = random.randint(0,len(self.current.index))
         # find the begining of the day
-        while(self.index>0 and 
+        forward_count = 0
+        while(self.index>0 and forward_count < 200 and 
             self.current.iloc[self.index]["UpdateTime"] - 
                 self.current.iloc[self.index - 1]["UpdateTime"] <  self.deltaTimeThresh ):
             self.index = self.index - 1
+            forward_count +=1
         
-        print("loaded: ",selectedFile,"start from: ",self.index)
+        print("start from: ",self.index)
         self.hands = 5
         tmp_obs = self.current.iloc[self.index:self.index+1]
         tmp_obs = tmp_obs.drop(columns = ["UpdateMillisec","UpdateTime"])
