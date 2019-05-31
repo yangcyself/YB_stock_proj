@@ -52,6 +52,8 @@ class StockEnv(gym.Env):
                 self.current.iloc[self.index ]["UpdateTime"] >  self.deltaTimeThresh )
         hand_obs = np.array(self.hands)
 
+        #rwd can be too large
+        rwd /=5000
 
         return (stock_obs,hand_obs), rwd, done, None
 
@@ -74,7 +76,8 @@ class StockEnv(gym.Env):
             forward_count +=1
         
         print("start from: ",self.index)
-        self.hands = 5
+        # self.hands = 5
+        self.hands = random.randint(0,10)
         tmp_obs = self.current.iloc[self.index:self.index+1]
         tmp_obs = tmp_obs.drop(columns = ["UpdateMillisec","UpdateTime"])
         # print(tmp_obs.columns.values)
@@ -123,7 +126,8 @@ class fannyEnv():
         return (stock_obs,hand_obs), rwd, done, None
 
     def reset(self):
-        self.hands = 5
+        # self.hands = 5
+        self.hands = random.randint(0,10)
         self.price = 100
         self.obs = 0
         self.stepcount = 0
