@@ -47,9 +47,9 @@ class StockEnv(gym.Env):
         tmp_obs = tmp_obs.drop(columns = ["UpdateMillisec","UpdateTime"])
         # print(tmp_obs.columns[119],tmp_obs.columns[108],tmp_obs.columns[118])
         stock_obs = tmp_obs.values[0]
+        done = (self.index >= len(self.current.index) or self.current.iloc[self.index]["UpdateTime"] - 
+                self.current.iloc[self.index-1 ]["UpdateTime"] >  self.deltaTimeThresh )
         rwd = (old_hand-self.hands) * stock_obs[self.action_prize[action]]
-        done = (self.current.iloc[self.index+1]["UpdateTime"] - 
-                self.current.iloc[self.index ]["UpdateTime"] >  self.deltaTimeThresh )
         hand_obs = np.array(self.hands)
 
         #rwd can be too large
