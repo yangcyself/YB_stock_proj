@@ -66,7 +66,7 @@ class StockEnv(gym.Env):
             print("loaded: ", selectedFile)
 
         self.change_file_count += 1
-        self.index = random.randint(0,len(self.current.index))
+        self.index = random.randint(0,len(self.current.index)-1)
         # find the begining of the day
         forward_count = 0
         while(self.index>0 and forward_count < 200 and 

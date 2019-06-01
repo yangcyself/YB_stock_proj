@@ -12,3 +12,4 @@ checkpoints/*
 __pycache__/*
 logs/*
 __pycache__/*
+__pycache__/model.cpython-36.pyc
