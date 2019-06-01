@@ -1,2 +1,2 @@
-model_checkpoint_path: "tcn_vin.ckpt-20"
-all_model_checkpoint_paths: "tcn_vin.ckpt-20"
+model_checkpoint_path: "tcn_vin.ckpt-1000"
+all_model_checkpoint_paths: "tcn_vin.ckpt-1000"
