@@ -44,8 +44,8 @@ class StockEnv(gym.Env):
         tmp_obs = tmp_obs.drop(columns = ["UpdateMillisec","UpdateTime"])
         stock_obs = tmp_obs.values[0]
         rwd = (old_hand-self.hands) * self.action_prize[action]
-        done = (self.current.iloc[self.index+1]["UpdateTime"] - 
-                self.current.iloc[self.index ]["UpdateTime"] >  self.deltaTimeThresh )
+        done = (self.index >= len(self.current.index) or self.current.iloc[self.index]["UpdateTime"] - 
+                self.current.iloc[self.index-1 ]["UpdateTime"] >  self.deltaTimeThresh )
         hand_obs = np.array(self.hands)
 
         if(done):
