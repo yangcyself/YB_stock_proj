@@ -49,12 +49,17 @@ for episode in range(EPISODES):
     obs = s
     ep_s, ep_h, ep_s_, ep_h_, ep_r = [],[],[],[],[]
     epoTotalReward = 0
+    epoTotalBuy ,epoTotalSell, epostartHand = 0
     for i in range(MAXSTEPS):
         if(obs.shape[0]<WAIT):
             (s_,h_),r,d,_ = e.step(1) 
         else:
             a = actor.choose_action( bn(obs[-WAIT:]),h)
             a = int(a)
+            if(a == 0 and h>0):
+                epoTotalSell +=1
+            elif(a==2 and h<10):
+                epoTotalBuy += 1
             (s_,h_),r,d,_ =e.step(a)
         
         obs = np.concatenate([obs,s_.reshape(1,-1)])
@@ -71,7 +76,8 @@ for episode in range(EPISODES):
         if(d):
             break
     # print(ep_r)
-    print(epoTotalReward)
+    print("epoTotalReward:",epoTotalReward)
+    print("epoTotalBuy",epoTotalBuy,"epoTotalSell",epoTotalSell)
     ep_s = np.array(ep_s)
     ep_s_ = np.array(ep_s_)
     ep_h = np.array(ep_h)

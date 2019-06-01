@@ -78,6 +78,7 @@ class StockEnv(gym.Env):
         print("start from: ",self.index)
         # self.hands = 5
         self.hands = random.randint(0,10)
+        print("epoInitHand:",self.hands)
         tmp_obs = self.current.iloc[self.index:self.index+1]
         tmp_obs = tmp_obs.drop(columns = ["UpdateMillisec","UpdateTime"])
         # print(tmp_obs.columns.values)
