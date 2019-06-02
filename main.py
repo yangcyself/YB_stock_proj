@@ -49,7 +49,7 @@ for episode in range(EPISODES):
     obs = s
     ep_s, ep_h, ep_s_, ep_h_, ep_r = [],[],[],[],[]
     epoTotalReward = 0
-    epoTotalBuy ,epoTotalSell, epostartHand = 0
+    epoTotalBuy ,epoTotalSell, epostartHand = 0,0,0
     for i in range(MAXSTEPS):
         if(obs.shape[0]<WAIT):
             (s_,h_),r,d,_ = e.step(1) 
