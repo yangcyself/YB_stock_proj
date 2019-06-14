@@ -47,7 +47,7 @@ for episode in range(EPISODES):
     s,h  = e.reset()
     s = s.reshape(1,-1)
     obs = s
-    ep_s, ep_h, ep_s_, ep_h_, ep_r = [],[],[],[],[]
+    ep_s, ep_h, ep_a, ep_s_, ep_h_, ep_r = [],[],[],[],[],[]
     epoTotalReward = 0
     epoTotalBuy ,epoTotalSell, epostartHand = 0,0,0
     for i in range(MAXSTEPS):
@@ -66,6 +66,7 @@ for episode in range(EPISODES):
         if(obs.shape[0]>WAIT):
             ep_h.append(h)
             ep_s.append(bn(obs[-WAIT-1:-1]))
+            ep_a.append(a)
             ep_h_.append(h_)
             ep_s_.append(bn(obs[-WAIT:]))
             ep_r.append(r)
@@ -80,11 +81,12 @@ for episode in range(EPISODES):
     print("epoTotalBuy",epoTotalBuy,"epoTotalSell",epoTotalSell)
     ep_s = np.array(ep_s)
     ep_s_ = np.array(ep_s_)
+    ep_a = np.array(ep_a)
     ep_h = np.array(ep_h)
     ep_h_ = np.array(ep_h_)
     ep_r = np.array(ep_r)
     # print(ep_s.shape,ep_s_.shape,ep_r.shape)
-    transitions = (ep_s,ep_h,ep_s_,ep_h_, ep_r)
+    transitions = (ep_s,ep_h,ep_a,ep_s_,ep_h_, ep_r)
     actor.learn(transitions)
     all_reward += epoTotalReward
     print("episode:",episode)

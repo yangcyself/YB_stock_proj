@@ -97,10 +97,10 @@ class Actor_Critic(object):
                 if(modelDebug):
                     print("value :",value.shape)
 
-                a = tf.argmax(action,axis = 1)
+                a = tf.argmax(action,axis = 1) # the optimal action selected by algorithm for inference
                 if(modelDebug):
                     print("a:",a.shape)
-                a_hot = tf.one_hot(a,depth = 3)
+                a_hot = tf.one_hot(A,depth = 3) # the one_hot vector from A(place holder of explored action) for training
                 prob = tf.reduce_sum(tf.multiply(action, a_hot),reduction_indices=[1])
                 eligibility = tf.log(prob) * (R - value ) 
                 loss = -tf.reduce_sum(eligibility)
@@ -120,7 +120,7 @@ class Actor_Critic(object):
 
 
     def learn(self, transitions,gamma = 0.95):   # batch update
-        s,h,s_,h_,r = transitions
+        s,h,a,s_,h_,r = transitions
         # print("rshape",r.shape)
         v = self.sess.run(self.value_, feed_dict = {S_:s_, H_:h_})
         # print("vshape",v.shape)
@@ -128,7 +128,7 @@ class Actor_Critic(object):
        	r = r.reshape(-1,1)
         v = r + gamma*v
         # print(s.shape, h.shape, v.shape)
-        self.sess.run(self.optimizer, feed_dict={S: s,H:h,R:v})
+        self.sess.run(self.optimizer, feed_dict={S: s,H:h,R:v,A:a})
 
         if self.replacement['name'] == 'soft':
             self.sess.run(self.soft_replace)
@@ -149,8 +149,13 @@ state_dim = (20,Feature_num) # num_steps, num_features
 with tf.name_scope('S'):
     S = tf.placeholder(tf.float32, shape=[None, *state_dim], name='s')
     H = tf.placeholder(tf.int32, shape=[None,], name='h')
+
+with tf.name_scope("A") :
+    A = tf.placeholder(tf.int32, shape=[None,], name='a')
+
 with tf.name_scope('R'):
     R = tf.placeholder(tf.float32, [None, 1], name='r')
+
 with tf.name_scope('S_'):
     S_ = tf.placeholder(tf.float32, shape=[None, *state_dim], name='s_')
     H_ = tf.placeholder(tf.int32, shape=[None,], name='h_')
