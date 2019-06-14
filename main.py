@@ -45,15 +45,15 @@ def bn(s):
 
 for episode in range(EPISODES):
     s,h  = e.reset()
+    epoTotalReward = -(s[0][108]*h)/5000 # make cost of invest of hands at first, thus, when this greater than 0, it means agent earded money
     s = s.reshape(1,-1)
     obs = s
     ep_s, ep_h, ep_a, ep_s_, ep_h_, ep_r = [],[],[],[],[],[]
-    epoTotalReward = -(s[0][108]*h)/5000 # make cost of invest of hands at first, thus, when this greater than 0, it means agent earded money
     epoTotalBuy ,epoTotalSell, epostartHand = 0,0,0
     for i in range(MAXSTEPS):
         if(obs.shape[0]<WAIT):
             (s_,h_),r,d,_ = e.step(1) 
-            epoTotalReward = -(s_[0][108]*h_)/5000
+            epoTotalReward = -(s_[108]*h_)/5000
         else:
             a = actor.choose_action( bn(obs[-WAIT:]),h)
             a = int(a)
