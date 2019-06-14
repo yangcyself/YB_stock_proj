@@ -52,6 +52,9 @@ class StockEnv(gym.Env):
         rwd = (old_hand-self.hands) * stock_obs[self.action_prize[action]]
         hand_obs = np.array(self.hands)
 
+        if(done):
+            rwd +=  self.hands* stock_obs[self.action_prize[0]]
+
         #rwd can be too large
         rwd /=5000
 
@@ -123,7 +126,7 @@ class fannyEnv():
         hand_obs = np.array(self.hands)
 
         if(done):
-            self.current = None
+            rwd += self.hands*self.price
         return (stock_obs,hand_obs), rwd, done, None
 
     def reset(self):
