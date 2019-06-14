@@ -45,7 +45,7 @@ def bn(s):
 
 for episode in range(EPISODES):
     s,h  = e.reset()
-    epoTotalReward = -(s[0][108]*h)/5000 # make cost of invest of hands at first, thus, when this greater than 0, it means agent earded money
+    epoTotalReward = -(s[108]*h)/5000 # make cost of invest of hands at first, thus, when this greater than 0, it means agent earded money
     s = s.reshape(1,-1)
     obs = s
     ep_s, ep_h, ep_a, ep_s_, ep_h_, ep_r = [],[],[],[],[],[]
