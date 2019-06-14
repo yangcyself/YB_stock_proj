@@ -48,11 +48,12 @@ for episode in range(EPISODES):
     s = s.reshape(1,-1)
     obs = s
     ep_s, ep_h, ep_a, ep_s_, ep_h_, ep_r = [],[],[],[],[],[]
-    epoTotalReward = 0
+    epoTotalReward = -(s[108]*h)/5000 # make cost of invest of hands at first, thus, when this greater than 0, it means agent earded money
     epoTotalBuy ,epoTotalSell, epostartHand = 0,0,0
     for i in range(MAXSTEPS):
         if(obs.shape[0]<WAIT):
             (s_,h_),r,d,_ = e.step(1) 
+            epoTotalReward = -(s_[108]*h_)/5000
         else:
             a = actor.choose_action( bn(obs[-WAIT:]),h)
             a = int(a)
@@ -97,4 +98,4 @@ for episode in range(EPISODES):
         info = {'averageTotalReward': all_reward/CHECKPOINTRATE}
         all_reward = 0
         for tag, value in info.items():
-            logger.scalar_summary(tag, value, i)
+            logger.scalar_summary(tag, value, episode)
