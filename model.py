@@ -137,10 +137,13 @@ class Actor_Critic(object):
                 self.sess.run(self.hard_replace)
             self.t_replace_counter += 1
 
-    def choose_action(self, s,h):
+    def choose_action(self, s,h, epsilon = 0.1):
         s = s[np.newaxis, :]    # single state
         h = h.reshape(1,*(h.shape))
-        return self.sess.run(self.a, feed_dict={S: s,H:h})
+        a = self.sess.run(self.a, feed_dict={S: s,H:h})
+        if(np.random.rand()<epsilon):
+            a = np.random.randint(0,3)
+        return a
 
 
 
