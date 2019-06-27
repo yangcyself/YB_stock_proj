@@ -5,3 +5,16 @@ This task involves reinforcement learning and will no longer use the tags in tas
 [VIN](https://github.com/TheAbhiKumar/tensorflow-value-iteration-networks)
 
 [TCN](https://github.com/Songweiping/TCN-TF)
+
+## Use Openai base line based algorithms
+The [gym-stock](gym-stock\gym_stock\envs\stock_env.py) environment is slightly different from the [stockenv](env\stockenv.py) as the return observation is a 138-d vector containing the hands count. Not a tuple with 137-d observation and hand count
+### install gym-stock
+``` bash
+pip install -e gym-stock
+```
+Then can build the gym-stock in the gym environment by 
+``` python
+import gym
+import gym_stock
+gym.make('stock-v0')
+```
