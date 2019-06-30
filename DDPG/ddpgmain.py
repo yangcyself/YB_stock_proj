@@ -3,6 +3,7 @@ import numpy as np
 import sys
 import gym
 import gym_stock
+import random
 np.random.seed(1)
 tf.set_random_seed(1)
 
@@ -97,7 +98,9 @@ class Actor(object):
         self.lr = learning_rate
         self.replacement = replacement
         self.t_replace_counter = 0
-
+        self.action_size = 3
+        self.epsilon = 1.0  # exploration rate
+        self.epsilon_decay = 0.99
         with tf.variable_scope('Actor'):
             # input s, output a
             self.a = self._build_net(S, scope='eval_net', trainable=True)
@@ -132,6 +135,7 @@ class Actor(object):
 
     def learn(self, s):   # batch update
         self.sess.run(self.train_op, feed_dict={S: s})
+        self.epsilon*=self.epsilon_decay
 
         if self.replacement['name'] == 'soft':
             self.sess.run(self.soft_replace)
@@ -141,6 +145,8 @@ class Actor(object):
             self.t_replace_counter += 1
 
     def choose_action(self, s):
+        if(np.random.rand()< self.epsilon):
+            return random.randrange(self.action_size)
         s = np.array(s)
         s = s[np.newaxis, :]    # single state
         actions =  self.sess.run(self.a, feed_dict={S: s})[0]  # single action
