@@ -257,7 +257,7 @@ class Memory(object):
 env = gym.make('stock-v0')
 
 state_dim = 1759
-action_dim = env.action_space.shape[0]
+action_dim = 3
 print("action_dim",action_dim)
 action_bound = env.action_space.high
 
