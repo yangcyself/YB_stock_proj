@@ -136,6 +136,8 @@ The behavior of this model looks like the following:
 
 ### PCA
 
+We also used PCA to augment the data, the process is similar to the above, use first 200 steps to train a PCA transformer and then use this transformer to transform the data after. The result of LSTM DQN model with PCA is as follows:
+
 
 
 ## DDPG
