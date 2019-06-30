@@ -255,7 +255,7 @@ class Memory(object):
 
 env = gym.make('stock-v0')
 
-state_dim = 1759
+state_dim = env.observation_space.shape[0]
 action_dim = 3
 print("action_dim",action_dim)
 
@@ -283,7 +283,7 @@ saver=tf.train.Saver(max_to_keep=1)
 M = Memory(MEMORY_CAPACITY, dims=2 * state_dim + action_dim + 1)
 
 if OUTPUT_GRAPH:
-    tf.summary.FileWriter("logs/", sess.graph)
+    tf.summary.FileWriter("./savedModels/", sess.graph)
 
 var = 0.01  # control exploration
 
@@ -291,7 +291,7 @@ logger = Logger("./logs")
 all_reward = 0
 
 for i in range(MAX_EPISODES):
-    state = env.reset()
+    s = env.reset()
     ep_reward = 0
     for j in range(MAX_EP_STEPS):
 
@@ -331,6 +331,6 @@ for i in range(MAX_EPISODES):
         all_reward = 0
         for tag, value in info.items():
             logger.scalar_summary(tag, value, i)
-        saver.save(sess, 'ddpg.ckpt', global_step=i + 1)
+        saver.save(sess, './savedModels/ddpg.ckpt', global_step=i + 1)
 
 sess.close()
