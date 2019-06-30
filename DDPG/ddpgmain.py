@@ -308,7 +308,7 @@ for i in range(MAX_EPISODES):
         s_, r, done, info = env.step(a)
     
         a = np.eye(3)[a]
-        M.store_transition(s, a, r / 10, s_)
+        M.store_transition(s, a, r , s_)
 
         if M.pointer > MEMORY_CAPACITY:
             var *= .99975    # decay the action randomness
