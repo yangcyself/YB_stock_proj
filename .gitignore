@@ -18,3 +18,6 @@ gym-stock/gym_stock/envs/envdata/*
 gym-stock/gym_stock/__pycache__/*
 gym-stock/gym_stock/envs/__pycache__/*
 gym-stock/gym_stock.egg-info/*
+gym-stock/gym_stock/envs/envoutdata/*
+lstmDQN/lstm_model.h5
+lstmDQN/__pycache__/*
