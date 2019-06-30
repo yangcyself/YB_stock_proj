@@ -23,13 +23,13 @@ trainNumbers = allNumbers - testNumbers
 MODE = "TRAIN"
 # ACCUMUREWARD = True
 # ACCUMUREWARD = False
-REWARDKIND = ["DIRECT","ACCUMULATE","ASSET"][2]
+REWARDKIND = ["DIRECT","ACCUMULATE","ASSET"][0]
 initHand = 0
 obsLenth = 20
 inputDataNames = [os.path.join(filePath,"%denv.pkl"%i) for i in (trainNumbers if MODE != "TEST" else testNumbers)] 
 ChangFile_num = 50
 OBS_HANDS = True
-OBS_HANDS = ["NO","CONCATE","TUPLE"][2]
+OBS_HANDS = ["NO","CONCATE","TUPLE"][1]
 trainAugLength = 200 # the number of data steps used to train the Augmentor
 
 class Augmentor():
@@ -88,8 +88,8 @@ class StockEnv(gym.Env):
     def __init__(self,inputdataNames = inputDataNames):
         # the length of the observation is 137 (not including hand)
         obsnum = 42
-        high = np.ones((obsLenth,obsnum))
-        # high = np.array(list(high)+[5])
+        high = np.ones((obsLenth*obsnum))
+        high = np.array(list(high)+[5])
         self.action_space = spaces.Discrete(3)
         self.observation_space = spaces.Box(low = -high,high = high,dtype = np.float32)
 
@@ -162,6 +162,7 @@ class StockEnv(gym.Env):
         if(OBS_HANDS=="TUPLE"):
             return (stock_obs,(hand_obs-5).reshape((1,))), rwd, done, info
         elif(OBS_HANDS=="CONCATE"):
+            stock_obs = stock_obs.reshape(-1)
             return self._concateObs(stock_obs,hand_obs-5), rwd, done, info
         else:
             return stock_obs, rwd, done, info
@@ -215,6 +216,7 @@ class StockEnv(gym.Env):
         if(OBS_HANDS=="TUPLE"):
             return (stock_obs, np.array(self.hands-5).reshape((1,)))
         elif(OBS_HANDS=="CONCATE"):
+            stock_obs = stock_obs.reshape(-1)
             return self._concateObs(stock_obs, np.array(self.hands-5))
         else:
             return stock_obs
