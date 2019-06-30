@@ -254,6 +254,7 @@ class Memory(object):
         indices = np.random.choice(self.capacity, size=n)
         return self.data[indices, :]
 
+env = gym.make('stock-v0')
 
 state_dim = 1759
 action_dim = env.action_space.shape[0]
@@ -290,7 +291,6 @@ var = 0.01  # control exploration
 
 logger = Logger("./logs")
 all_reward = 0
-env = gym.make('stock-v0')
 
 for i in range(MAX_EPISODES):
     state,hand = env.reset()
