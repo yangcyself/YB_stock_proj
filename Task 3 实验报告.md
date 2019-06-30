@@ -1,6 +1,6 @@
 # Task 3 experiment Report
 
-The task is to train an agent to invest in the market and earn as much profit as possible. The raw observation in this task is the features of the market, and the action space is three discrete choices, namely:  to hold, to sell one hand, and to buy one hand. As the task is simply choose actions according to observation, a naïve method is the train a predictor to predict the rising and falling trends in the near future, and then simply let the agent to buy when the predictor predicts price rising. We use this method as a baseline to test the ability to earn money of our agent. In the following sections, we will compare different reward function. And we will test the effect of adding in different data augmentation methods. Then we will test different network architectures. After this, we will compare two sets of reinforcement learning algorithms--Value function based methods like DQN or Policy Gradient based algorithms like DDPG, TRPO or PPO. At last, we adopt a new kind of network architecture, namely value iteration network in this task. The biggest characteristic of this algorithm is it is model based. As we can know exactly how many hands we will hold after a certain action, we hope this model based algorithm is suitable for the task.
+The task is to train an agent to invest in the market and earn as much profit as possible. The raw observation in this task is the features of the market, and the action space is three discrete choices, namely:  to hold, to sell one hand, and to buy one hand. In the following sections, we will compare different reward function. And we will test the effect of adding in different data augmentation methods. Then we will test different network architectures. After this, we will compare two sets of reinforcement learning algorithms--Value function based methods like DQN or Policy Gradient based algorithms like DDPG, TRPO or PPO. At last, we adopt a new kind of network architecture, namely value iteration network in this task. The biggest characteristic of this algorithm is it is model based. As we can know exactly how many hands we will hold after a certain action, we hope this model based algorithm is suitable for the task.
 
 
 
@@ -51,10 +51,6 @@ This means the when the agent takes a "buy" action, it does not actually pay all
 ### observations
 
 Another key issue about the training a good agent is the observation.  As shown in the first and second tasks, simply feed the raw features to the network might is not a feasible solution. Hence, we tried data augmentation based on the techniques explored in the first two tasks. However, we have to keep in mind that the data augmentation should not use the future data, otherwise, we are using future to predict the future. 
-
-
-
-## Base Line
 
 
 
@@ -124,7 +120,21 @@ We looked at some other episodes, and found the model fails to earn money in mos
 
 ## Data Augmentation 
 
+### Normalization
 
+The first augmentation is normalization. As the data is in the dataset represents totally different meaning ,their scales should be processed. So we normalized the features to make its mean is 0 and variance is 1. We collect the first 200 input features of each epoch and calculate their mean and variance. we process later features by substracting the mean and dividing the variance.
+
+The LSTM DQN Model this Normalization yields performance similar to the raw one. Although it is still losing money.
+
+The behavior of this model looks like the following:
+
+![1561894119754](D:\yangcy\UNVjunior\EE359\Projects\stockRL\pics\LSTMDQNhand0-Norm.png)
+
+>PROFIT: -984.0
+>AveBuyPrice: 5611.224645583424
+>AveSellPrice: 5610.151581243184
+
+### PCA
 
 
 
