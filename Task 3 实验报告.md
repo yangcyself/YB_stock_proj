@@ -44,7 +44,7 @@ We cannot understand why this kind of reward can yield a good performance, as th
 
 In the above reward functions, the number of stocks currently hold by the agent does not contribute directly to the reward. We can change this by introducing asset rewards.
 $$
-R_{asset}(t) = R_{direct}(t) + Hand(t)*midprice(t)
+R_{asset}(t) = R_{direct}(t) +\lambda Hand(t)*bidprice(t)
 $$
 This means the when the agent takes a "buy" action, it does not actually pay all the money, its money is just changed into a another form of assets.
 
@@ -92,7 +92,17 @@ This is the plot about the percentage of the agent to choose "Sell" action. Note
 
 ### Basic case with asset rewards
 
+With the asset reward, the agent prone to buy stock as soon  and as much as possible. The learning curve is as following
 
+![1561886426862](D:\yangcy\UNVjunior\EE359\Projects\stockRL\pics\DQNassetR.png)
+
+Although the learning curve looks good, the curve of percentage of "buy" and "sell" action is:
+
+![1561886538219](D:\yangcy\UNVjunior\EE359\Projects\stockRL\pics\DQNassetR_buy.png)![1561886566650](D:\yangcy\UNVjunior\EE359\Projects\stockRL\pics\DQNassetR_sell.png)
+
+we can find that the agent seldom sells.
+
+Thus, from the comparison above, we conclude the direct reward is the best and we will use the direct reward in the following experiments.
 
 ## LSTM Model
 
