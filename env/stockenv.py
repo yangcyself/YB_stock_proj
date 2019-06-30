@@ -24,12 +24,7 @@ class StockEnv(gym.Env):
     # at each time, randomly select a pickle to load, and randomly choose a time to start
 
     def __init__(self,inputdataNames = inputDataNames):
-        # the length of the observation is 137 (not including hand)
-        high = np.ones((137,))
-        high = np.array(list(high)+[5])
-        self.action_space = spaces.Discrete(3)
-        self.observation_space = spaces.Box(low = -high,high = high,dtype = np.float32)
-
+        
         self.hands = 0
         self.inputDataNames = inputDataNames
         self.current = None
@@ -42,9 +37,6 @@ class StockEnv(gym.Env):
         
         self.change_file_count = 0
     
-    def _concateObs(self,stock,hand):
-        return np.array(list(stock)+[int(hand)])
-
     def step(self,action):
         old_hand = self.hands
         self.hands += self.action_hand[action]
@@ -66,7 +58,7 @@ class StockEnv(gym.Env):
         #rwd can be too large
         rwd /=5000
 
-        return self._concateObs(stock_obs,hand_obs-5), rwd, done, None
+        return (stock_obs,hand_obs), rwd, done, None
 
     def reset(self):
         if(self.current is None or self.change_file_count > ChangFile_num): 
@@ -95,7 +87,7 @@ class StockEnv(gym.Env):
         # print(tmp_obs.columns.values)
         stock_obs = tmp_obs.values[0]
         # print(stock_obs.shape)
-        return self._concateObs(stock_obs, np.array(self.hands-5))
+        return stock_obs, np.array(self.hands)
     def render(self, mode='human'):
         pass           
 

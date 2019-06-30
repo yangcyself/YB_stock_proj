@@ -18,3 +18,20 @@ import gym
 import gym_stock
 gym.make('stock-v0')
 ```
+
+add the following line in the [run.py line 52](https://github.com/openai/baselines/blob/master/baselines/run.py#L52) of openai baseline
+```python
+_game_envs['custom_type']={'stock-v0'}
+```
+
+add the following line in [cmd_util](https://github.com/openai/baselines/tree/master/baselines/common/cmd_tuil.py#L65)
+```python
+from importlib import import_module
+        import_module("gym_stock")
+```
+Then can train the policy with gym's algorithms
+``` bash
+python -m baselines.run --alg=deepq --env=stock-v0 --save_path=./cartpole_model.pkl --num_timesteps=1e5 --print_freq=10
+```
+
+<!-- add two lines and change the line 75 in cmd_util.py  in baseline to enable monitor's info keywords  -->
