@@ -19,8 +19,8 @@ outfilePath = os.path.join(os.path.dirname(os.path.realpath(__file__)),"envoutda
 allNumbers = set([i for i in range(100)])
 testNumbers = set([i for i in range(0,100,7)])
 trainNumbers = allNumbers - testNumbers
-# MODE = "TEST"
-MODE = "TRAIN"
+MODE = "TEST"
+# MODE = "TRAIN"
 # ACCUMUREWARD = True
 # ACCUMUREWARD = False
 REWARDKIND = ["DIRECT","ACCUMULATE","ASSET"][2]
@@ -28,7 +28,8 @@ initHand = 0
 obsLenth = 20
 inputDataNames = [os.path.join(filePath,"%denv.pkl"%i) for i in (trainNumbers if MODE != "TEST" else testNumbers)] 
 ChangFile_num = 50
-OBS_HANDS = False
+OBS_HANDS = True
+OBS_HANDS = ["NO","CONCATE","TUPLE"][2]
 trainAugLength = 200 # the number of data steps used to train the Augmentor
 
 class Augmentor():
@@ -139,7 +140,7 @@ class StockEnv(gym.Env):
             self.accumulated_reward += rwd
             rwd = self.accumulated_reward
         elif(REWARDKIND=="ASSET"):
-            rwd += self.hands*stock_obs[-1][self.action_prize[0]] # add the bid price as the asset saved in the market
+            rwd += self.hands*stock_obs[-1][self.action_prize[0]]/6000 # add the bid price as the asset saved in the market
 
         info = {}
         totalActions = sum([self.actionCounts[i] for i in range(3)])
@@ -156,7 +157,9 @@ class StockEnv(gym.Env):
         if(self.augmentor is not None):
             stock_obs = self.augmentor.transform(stock_obs)
 
-        if(OBS_HANDS):
+        if(OBS_HANDS=="TUPLE"):
+            return (stock_obs,(hand_obs-5).reshape((1,))), rwd, done, info
+        elif(OBS_HANDS=="CONCATE"):
             return self._concateObs(stock_obs,hand_obs-5), rwd, done, info
         else:
             return stock_obs, rwd, done, info
@@ -207,7 +210,9 @@ class StockEnv(gym.Env):
             self.accumulated_reward = 0
         if(self.augmentor is not None):
             stock_obs = self.augmentor.transform(stock_obs)
-        if(OBS_HANDS):
+        if(OBS_HANDS=="TUPLE"):
+            return (stock_obs, np.array(self.hands-5).reshape((1,)))
+        elif(OBS_HANDS=="CONCATE"):
             return self._concateObs(stock_obs, np.array(self.hands-5))
         else:
             return stock_obs
