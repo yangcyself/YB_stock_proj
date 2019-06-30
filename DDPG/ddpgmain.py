@@ -291,7 +291,7 @@ logger = Logger("./logs")
 all_reward = 0
 
 for i in range(MAX_EPISODES):
-    state,hand = env.reset()
+    state = env.reset()
     ep_reward = 0
     for j in range(MAX_EP_STEPS):
 
