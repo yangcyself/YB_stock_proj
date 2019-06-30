@@ -77,7 +77,7 @@ class PCAAugmentor(Augmentor):
         normed = self.normalizer.transform(X)
         self.pca.fit(normed)
     def transform(self,X):
-        normed = self.normalizer(X)
+        normed = self.normalizer.transform(X)
         return self.pca.transform(normed)
 
 class StockEnv(gym.Env):
@@ -105,7 +105,8 @@ class StockEnv(gym.Env):
         self.change_file_count = 0
         self.history = None
         self.fileind = 0
-        self.augmentor = NormAugmentor()
+        # self.augmentor = NormAugmentor()
+        self.augmentor = PCAAugmentor()
 
     def _concateObs(self,stock,hand):
         return np.array(list(stock)+[int(hand)])
