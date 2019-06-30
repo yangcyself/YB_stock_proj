@@ -255,7 +255,7 @@ class Memory(object):
 
 env = gym.make('stock-v0')
 
-state_dim = 1759
+state_dim = env.observation_space.shape[0]
 action_dim = 3
 print("action_dim",action_dim)
 
@@ -291,7 +291,7 @@ logger = Logger("./logs")
 all_reward = 0
 
 for i in range(MAX_EPISODES):
-    state = env.reset()
+    s = env.reset()
     ep_reward = 0
     for j in range(MAX_EP_STEPS):
 

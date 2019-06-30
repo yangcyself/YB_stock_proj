@@ -23,8 +23,8 @@ trainNumbers = allNumbers - testNumbers
 MODE = "TRAIN"
 # ACCUMUREWARD = True
 # ACCUMUREWARD = False
-REWARDKIND = ["DIRECT","ACCUMULATE","ASSET"][2]
-initHand = 0
+REWARDKIND = ["DIRECT","ACCUMULATE","ASSET"][0]
+initHand = -1
 obsLenth = 20
 inputDataNames = [os.path.join(filePath,"%denv.pkl"%i) for i in (trainNumbers if MODE != "TEST" else testNumbers)] 
 ChangFile_num = 50
