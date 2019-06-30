@@ -132,7 +132,7 @@ class fannyEnv():
     def reset(self):
         # self.hands = 5
         self.hands = random.randint(0,10)
-        self.price = 100
-        self.obs = 0
+        self.price = 0
+        self.obs = 10 * (random.random()-0.5) #this is the over all tendency
         self.stepcount = 0
         return self.generage_obs(),self.hands

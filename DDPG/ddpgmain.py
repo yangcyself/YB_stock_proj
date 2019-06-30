@@ -283,7 +283,7 @@ saver=tf.train.Saver(max_to_keep=1)
 M = Memory(MEMORY_CAPACITY, dims=2 * state_dim + action_dim + 1)
 
 if OUTPUT_GRAPH:
-    tf.summary.FileWriter("logs/", sess.graph)
+    tf.summary.FileWriter("./savedModels/", sess.graph)
 
 var = 0.01  # control exploration
 
@@ -331,6 +331,6 @@ for i in range(MAX_EPISODES):
         all_reward = 0
         for tag, value in info.items():
             logger.scalar_summary(tag, value, i)
-        saver.save(sess, 'ddpg.ckpt', global_step=i + 1)
+        saver.save(sess, './savedModels/ddpg.ckpt', global_step=i + 1)
 
 sess.close()
